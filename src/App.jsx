@@ -1,28 +1,38 @@
-import { useState } from 'react'
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import Landing from './components/Landing';
+import Auth from './components/Auth';
+import DashboardPreview from './components/DashboardPreview';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [page, setPage] = useState('landing'); // 'landing' | 'login' | 'signup' | 'dashboard'
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Vibe Coding Platform
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Your AI-powered development environment
-        </p>
-        <div className="text-center">
-          <button
-            onClick={() => setCount(count + 1)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-          >
-            Count is {count}
-          </button>
-        </div>
-      </div>
+    <div className="font-sans text-gray-900">
+      <AnimatePresence mode="wait">
+        {page === 'landing' && (
+          <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <Landing onNavigate={setPage} />
+          </motion.div>
+        )}
+        {(page === 'login' || page === 'signup') && (
+          <motion.div key={page} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <Auth
+              mode={page}
+              onBack={() => setPage('landing')}
+              onSwitch={(next) => setPage(next)}
+              onSuccess={() => setPage('dashboard')}
+            />
+          </motion.div>
+        )}
+        {page === 'dashboard' && (
+          <motion.div key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <DashboardPreview onBack={() => setPage('landing')} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
